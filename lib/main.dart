@@ -1,11 +1,7 @@
 import 'dart:async';
-import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:video_player/video_player.dart';
 
 class CameraExampleHome extends StatefulWidget {
   /// Default Constructor
@@ -45,9 +41,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   XFile? imageFile;
   XFile? videoFile;
   VoidCallback? videoPlayerListener;
-  double _minAvailableExposureOffset = 0.0;
-  double _maxAvailableExposureOffset = 0.0;
-  double _currentExposureOffset = 0.0;
   AssetImage wallpaper = const AssetImage('assets/images/wallpaper.jpg');
 
   // Counting pointers (number of user fingers on screen)
@@ -106,8 +99,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                   child: _cameraPreviewWidget(),
                 ),
               ),
-              // _captureControlRowWidget(),
-              // _modeControlRowWidget(),
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: Row(
@@ -178,11 +169,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
     final CameraController? oldController = controller;
     if (oldController != null) {
-      // `controller` needs to be set to null before getting disposed,
-      // to avoid a race condition when we use the controller that is being
-      // disposed. This happens when camera permission dialog shows up,
-      // which triggers `didChangeAppLifecycleState`, which disposes and
-      // re-creates the controller.
       controller = null;
       await oldController.dispose();
     }
@@ -210,15 +196,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     try {
       await cameraController.initialize();
       await Future.wait(<Future<Object?>>[
-        // The exposure mode is currently not supported on the web.
         ...!kIsWeb
+            //set exposure and other paramaters to suit light pollution recording
             ? <Future<Object?>>[
-                cameraController.getMinExposureOffset().then(
-                    (double value) => _minAvailableExposureOffset = value),
-                cameraController.getMaxExposureOffset().then((double value) => {
-                      _maxAvailableExposureOffset = value,
-                      cameraController.setExposureOffset(value)
-                    }),
+                cameraController.getMaxExposureOffset().then((double value) =>
+                    {cameraController.setExposureOffset(value)}),
                 cameraController.setFlashMode(FlashMode.off),
                 cameraController.setFocusMode(FocusMode.auto),
                 cameraController.setZoomLevel(1.0)
@@ -271,54 +253,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         }
       }
     });
-  }
-
-  Future<void> onPausePreviewButtonPressed() async {
-    final CameraController? cameraController = controller;
-
-    if (cameraController == null || !cameraController.value.isInitialized) {
-      showInSnackBar('Error: select a camera first.');
-      return;
-    }
-
-    if (cameraController.value.isPreviewPaused) {
-      await cameraController.resumePreview();
-    } else {
-      await cameraController.pausePreview();
-    }
-
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  Future<void> setExposureMode(ExposureMode mode) async {
-    if (controller == null) {
-      return;
-    }
-
-    try {
-      await controller!.setExposureMode(mode);
-    } on CameraException catch (e) {
-      _showCameraException(e);
-      rethrow;
-    }
-  }
-
-  Future<void> setExposureOffset(double offset) async {
-    if (controller == null) {
-      return;
-    }
-
-    setState(() {
-      _currentExposureOffset = offset;
-    });
-    try {
-      offset = await controller!.setExposureOffset(offset);
-    } on CameraException catch (e) {
-      _showCameraException(e);
-      rethrow;
-    }
   }
 
   Future<XFile?> takePicture() async {
