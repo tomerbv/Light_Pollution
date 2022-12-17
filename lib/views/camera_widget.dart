@@ -1,13 +1,9 @@
 import 'dart:async';
+import '../services/api_service.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:light_pollution/views/welcome.dart';
-import '../main.dart';
 import '../services/errors.dart';
-
-import 'dart:convert';
-import 'package:flutter/material.dart';
 
 class CameraWidget extends StatefulWidget {
   Function(int) callback;
@@ -229,13 +225,16 @@ class _CameraWidgetState extends State<CameraWidget>
   }
 
   void onTakePictureButtonPressed() {
-    takePicture().then((XFile? file) {
+    takePicture().then((XFile? file) async {
       if (mounted) {
         setState(() {
           imageFile = file;
         });
         if (file != null) {
-          showInSnackBar('Picture saved to ${file.path}');
+          var success = await ApiService.upload(file);
+          if (success) {
+            showInSnackBar('Measurement has been Sent!');
+          }
         }
       }
     });

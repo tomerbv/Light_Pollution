@@ -11,7 +11,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  late String email;
+  late String username;
   late String password;
 
   @override
@@ -34,10 +34,12 @@ class _LoginPageState extends State<LoginPage> {
                 child: TextField(
                   obscureText: false,
                   decoration: InputDecoration(
-                      fillColor: Colors.white, filled: true, hintText: 'email'),
+                      fillColor: Colors.white,
+                      filled: true,
+                      hintText: 'username'),
                   onChanged: (value) {
                     setState(() {
-                      email = value;
+                      username = value;
                     });
                   },
                 )),
@@ -58,9 +60,7 @@ class _LoginPageState extends State<LoginPage> {
                 )),
             InkWell(
                 onTap: () async {
-                  print(password);
-                  print(email);
-                  await ApiService.login(email, password, context);
+                  login();
                 },
                 child: Container(
                   margin:
@@ -80,5 +80,11 @@ class _LoginPageState extends State<LoginPage> {
                 ))
           ],
         ));
+  }
+
+  login() async {
+    if (await ApiService.login(username, password, context)) {
+      return true;
+    }
   }
 }

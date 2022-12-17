@@ -11,7 +11,10 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  late String email;
+  late String username;
+  late String first_name;
+  late String last_name;
+  late String age;
   late String password;
 
   @override
@@ -34,10 +37,55 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: TextField(
                   obscureText: false,
                   decoration: InputDecoration(
-                      fillColor: Colors.white, filled: true, hintText: 'email'),
+                      fillColor: Colors.white,
+                      filled: true,
+                      hintText: 'username'),
                   onChanged: (value) {
                     setState(() {
-                      email = value;
+                      username = value;
+                    });
+                  },
+                )),
+            Container(
+                width: 300,
+                padding: const EdgeInsets.all(10),
+                child: TextField(
+                  obscureText: false,
+                  decoration: InputDecoration(
+                      fillColor: Colors.white,
+                      filled: true,
+                      hintText: 'first_name'),
+                  onChanged: (value) {
+                    setState(() {
+                      first_name = value;
+                    });
+                  },
+                )),
+            Container(
+                width: 300,
+                padding: const EdgeInsets.all(10),
+                child: TextField(
+                  obscureText: false,
+                  decoration: InputDecoration(
+                      fillColor: Colors.white,
+                      filled: true,
+                      hintText: 'last_name'),
+                  onChanged: (value) {
+                    setState(() {
+                      last_name = value;
+                    });
+                  },
+                )),
+            Container(
+                width: 300,
+                padding: const EdgeInsets.all(10),
+                child: TextField(
+                  obscureText: false,
+                  decoration: InputDecoration(
+                      fillColor: Colors.white, filled: true, hintText: 'age'),
+                  onChanged: (value) {
+                    setState(() {
+                      age = value;
                     });
                   },
                 )),
@@ -58,7 +106,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 )),
             InkWell(
                 onTap: () async {
-                  await ApiService.register(email, password, context);
+                  register();
                 },
                 child: Container(
                   margin:
@@ -80,5 +128,12 @@ class _RegisterPageState extends State<RegisterPage> {
 
           // ignore: avoid_unnecessary_containers
         ));
+  }
+
+  register() async {
+    if (await ApiService.register(
+        username, first_name, last_name, age, password, context)) {
+      return true;
+    }
   }
 }

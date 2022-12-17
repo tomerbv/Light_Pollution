@@ -1,23 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:camera/camera.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import '../main.dart';
-import '/views/welcome.dart';
-import '../views/camera_widget.dart';
 
 class ApiService {
   static final _client = http.Client();
 
-  static var _loginUrl = Uri.parse('http://10.0.2.2:5000/login');
+  static var _loginUrl = Uri.parse('http://10.100.102.7:5000/login');
 
-  static var _registerUrl = Uri.parse('http://10.0.2.2:5000/register');
+  static var _registerUrl = Uri.parse('http://10.100.102.7:5000/register');
 
-  static login(email, password, context) async {
+  static var _sendImageUrl =
+      Uri.parse("http://10.100.102.7:5000/sendMeasurement");
+
+  static login(username, password, context) async {
     http.Response response = await _client.post(_loginUrl, body: {
-      "email": email,
+      "username": username,
       "password": password,
     });
 
@@ -38,24 +37,50 @@ class ApiService {
     }
   }
 
-  static register(email, password, context) async {
-    http.Response response = await _client.post(_registerUrl, body: {
-      "email": email,
-      "password": password,
-    });
-
-    if (response.statusCode == 200) {
-      var json = jsonDecode(response.body);
-      if (json[0] == 'username already exist') {
-        await EasyLoading.showError(json[0]);
+  static register(
+      username, first_name, last_name, age, password, context) async {
+    try {
+      http.Response response = await _client.post(_registerUrl, body: {
+        "username": username,
+        "first_name": first_name,
+        "last_name": last_name,
+        "age": age,
+        "password": password,
+      });
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+        if (json[0] == 'username already exist') {
+          await EasyLoading.showError(json[0]);
+        } else {
+          await EasyLoading.showSuccess(json[0]);
+          return true;
+        }
       } else {
-        await EasyLoading.showSuccess(json[0]);
-        // Navigator.pushReplacement(
-        //     context, MaterialPageRoute(builder: (context) => CameraWidget()));
+        await EasyLoading.showError(
+            "Error Code : ${response.statusCode.toString()}");
       }
-    } else {
-      await EasyLoading.showError(
-          "Error Code : ${response.statusCode.toString()}");
+    } catch (_) {
+      print("failed");
     }
+    return false;
+  }
+
+  static upload(XFile imageFile) async {
+    try {
+      var request = http.MultipartRequest('POST', _sendImageUrl);
+      request.files.add(http.MultipartFile.fromBytes(
+          'image', File(imageFile!.path).readAsBytesSync(),
+          filename: imageFile!.path));
+      http.StreamedResponse response = await request.send();
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        await EasyLoading.showError(
+            "Error Code : ${response.statusCode.toString()}");
+      }
+    } catch (error) {
+      print(error.toString());
+    }
+    return false;
   }
 }
