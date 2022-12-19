@@ -1,8 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+
+import 'device_info.dart';
+import 'location_service.dart';
 
 class ApiService {
   static final _client = http.Client();
@@ -68,6 +72,20 @@ class ApiService {
   static upload(XFile imageFile) async {
     try {
       var request = http.MultipartRequest('POST', _sendImageUrl);
+      Map<String, dynamic> deviceInfo = DeviceInfo.getPlatformState();
+      String deviceModel =
+          deviceInfo['model'] ? deviceInfo['model'] : "unknown";
+      Position? position = await LocationService.getCurrentPosition();
+      if (position != null) {
+        request.fields.addAll({
+          "cloud_cover": '0',
+          "latitude": position.latitude.toString(),
+          "longitude": position.longitude.toString(),
+          "altitude": position.altitude.toString(),
+          "device": deviceModel
+        });
+      }
+
       request.files.add(http.MultipartFile.fromBytes(
           'image', File(imageFile!.path).readAsBytesSync(),
           filename: imageFile!.path));
