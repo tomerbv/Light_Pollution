@@ -11,12 +11,12 @@ import 'location_service.dart';
 class ApiService {
   static final _client = http.Client();
 
-  static var _loginUrl = Uri.parse('http://10.100.102.7:5000/login');
+  static final _loginUrl = Uri.parse('http://10.100.102.6:5000/login');
 
-  static var _registerUrl = Uri.parse('http://10.100.102.7:5000/register');
+  static final _registerUrl = Uri.parse('http://10.100.102.6:5000/register');
 
-  static var _sendImageUrl =
-      Uri.parse("http://10.100.102.7:5000/sendMeasurement");
+  static final _sendImageUrl =
+      Uri.parse("http://10.100.102.6:5000/sendMeasurement");
 
   static login(username, password, context) async {
     http.Response response = await _client.post(_loginUrl, body: {
@@ -72,16 +72,15 @@ class ApiService {
   static upload(XFile imageFile) async {
     try {
       var request = http.MultipartRequest('POST', _sendImageUrl);
-      Map<String, dynamic> deviceInfo = DeviceInfo.getPlatformState();
-      String deviceModel =
-          deviceInfo['model'] ? deviceInfo['model'] : "unknown";
+      Map<String, dynamic> deviceInfo = await DeviceInfo.getPlatformState();
+      String deviceModel = deviceInfo['model'] ?? "unknown";
       Position? position = await LocationService.getCurrentPosition();
       if (position != null) {
         request.fields.addAll({
           "cloud_cover": '0',
           "latitude": position.latitude.toString(),
           "longitude": position.longitude.toString(),
-          "altitude": position.altitude.toString(),
+          "elevation": position.altitude.toString(),
           "device": deviceModel
         });
       }
