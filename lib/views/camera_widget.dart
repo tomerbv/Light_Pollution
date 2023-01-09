@@ -35,6 +35,7 @@ class _CameraWidgetState extends State<CameraWidget>
   Timer? interval;
   int pollutionValue = -1;
   bool _isDetecting = false;
+  Object? image;
 
   @override
   void initState() {
@@ -259,8 +260,8 @@ class _CameraWidgetState extends State<CameraWidget>
     }
 
     try {
-      cameraController
-          .startImageStream((CameraImage image) => {calcPollutionValue(image)});
+      // cameraController
+      //     .startImageStream((CameraImage image) => {calcPollutionValue(image)});
     } on CameraException catch (e) {
       _showCameraException(e);
     }
@@ -279,36 +280,36 @@ class _CameraWidgetState extends State<CameraWidget>
     pollutionValue = -1;
   }
 
-  calcPollutionValue(CameraImage? cameraImage) {
-    if (_isDetecting) return;
-    setState(() {
-      _isDetecting = true;
-    });
-    Timer(const Duration(milliseconds: 500), () {
-      if (cameraImage != null) {
-        imglib.JpegDecoder jpegDecoder = imglib.JpegDecoder();
+  // calcPollutionValue(CameraImage? cameraImage) {
+  //   if (_isDetecting) return;
+  //   setState(() {
+  //     _isDetecting = true;
+  //   });
+  //   Timer(const Duration(milliseconds: 500), () {
+  //     if (cameraImage != null) {
+  //       imglib.JpegDecoder jpegDecoder = imglib.JpegDecoder();
 
-        imglib.Image? img = jpegDecoder.decode(cameraImage.planes.first.bytes);
+  //       imglib.Image? img = jpegDecoder.decode(cameraImage.planes.first.bytes);
 
-        if (img != null) {
-          num count = 0;
-          int len = (img.width * img.height);
-          for (var pixel in img) {
-            count += pixel.b;
-          }
-          int res = (count / len).round();
+  //       if (img != null) {
+  //         num count = 0;
+  //         int len = (img.width * img.height);
+  //         for (var pixel in img) {
+  //           count += pixel.b;
+  //         }
+  //         // count = img.map((pixle) => pixle.b).reduce((a, b) => a + b);
+  //         int res = (count / len).round();
 
-          setState(() {
-            pollutionValue = res;
-            _isDetecting = false;
-          });
-        }
-      }
-    });
-  }
+  //         setState(() {
+  //           pollutionValue = res;
+  //           _isDetecting = false;
+  //         });
+  //       }
+  //     }
+  //   });
+  // }
 
   void onTakePictureButtonPressed() {
-    stopShowPollutionValue();
     takePicture().then((XFile? file) async {
       if (mounted) {
         setState(() {
