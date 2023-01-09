@@ -31,10 +31,6 @@ class _CameraWidgetState extends State<CameraWidget>
   CameraController? controller;
   XFile? imageFile;
   XFile? videoFile;
-  VoidCallback? videoPlayerListener;
-  Timer? interval;
-  int pollutionValue = -1;
-  bool _isDetecting = false;
 
   @override
   void initState() {
@@ -73,7 +69,6 @@ class _CameraWidgetState extends State<CameraWidget>
       //handle return button
       onWillPop: () async {
         if (this.controller != null) {
-          this.stopShowPollutionValue();
           this.controller = null;
           setState(() {});
         } else {
@@ -86,17 +81,6 @@ class _CameraWidgetState extends State<CameraWidget>
       },
       child: Column(
         children: <Widget>[
-          Container(
-              width: 70.0,
-              height: 70.0,
-              child: controller != null
-                  ? Text(pollutionValue.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 36.0,
-                        fontWeight: FontWeight.w900,
-                      ))
-                  : null),
           Expanded(
             child: Container(
               child: _cameraPreviewWidget(),
@@ -109,8 +93,8 @@ class _CameraWidgetState extends State<CameraWidget>
             ),
           ),
           Container(
-              width: 70.0,
-              height: 70.0,
+              width: 75.0,
+              height: 75.0,
               child: controller != null
                   ? FloatingActionButton(
                       backgroundColor: Color.fromARGB(255, 49, 121, 255),
@@ -209,8 +193,6 @@ class _CameraWidgetState extends State<CameraWidget>
               ]
             : <Future<Object?>>[],
       ]);
-
-      startShowPollutionValue();
     } on CameraException catch (e) {
       switch (e.code) {
         case 'CameraAccessDenied':
@@ -246,78 +228,17 @@ class _CameraWidgetState extends State<CameraWidget>
     }
   }
 
-  void startShowPollutionValue() {
-    final CameraController? cameraController = controller;
-    if (cameraController == null || !cameraController.value.isInitialized) {
-      showInSnackBar('Error: select a camera first.');
-      return;
-    }
-
-    if (cameraController.value.isTakingPicture) {
-      // A capture is already pending, do nothing.
-      return;
-    }
-
-    try {
-      cameraController
-          .startImageStream((CameraImage image) => {calcPollutionValue(image)});
-    } on CameraException catch (e) {
-      _showCameraException(e);
-    }
-  }
-
-  void stopShowPollutionValue() {
-    if (pollutionValue == -1) {
-      return;
-    }
-    final CameraController? cameraController = controller;
-    if (cameraController == null || !cameraController.value.isInitialized) {
-      showInSnackBar('Error: select a camera first.');
-      return;
-    }
-    cameraController.stopImageStream();
-    pollutionValue = -1;
-  }
-
-  calcPollutionValue(CameraImage? cameraImage) {
-    if (_isDetecting) return;
-    setState(() {
-      _isDetecting = true;
-    });
-    Timer(const Duration(milliseconds: 500), () {
-      if (cameraImage != null) {
-        imglib.JpegDecoder jpegDecoder = imglib.JpegDecoder();
-
-        imglib.Image? img = jpegDecoder.decode(cameraImage.planes.first.bytes);
-
-        if (img != null) {
-          num count = 0;
-          int len = (img.width * img.height);
-          for (var pixel in img) {
-            count += pixel.b;
-          }
-          int res = (count / len).round();
-
-          setState(() {
-            pollutionValue = res;
-            _isDetecting = false;
-          });
-        }
-      }
-    });
-  }
-
   void onTakePictureButtonPressed() {
-    stopShowPollutionValue();
     takePicture().then((XFile? file) async {
       if (mounted) {
         setState(() {
           imageFile = file;
         });
         if (file != null) {
-          var success = await ApiService.upload(file);
-          if (success) {
-            showInSnackBar('Measurement has been Sent!');
+          var value = await ApiService.upload(file);
+          if (int.parse(value) >= 0) {
+            showInSnackBar(
+                'Measurement has been Sent! Pollution value: ' + value);
           } else {
             showInSnackBar('An error has occured, could not send measurement');
           }

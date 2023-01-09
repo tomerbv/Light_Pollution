@@ -88,9 +88,11 @@ class ApiService {
       request.files.add(http.MultipartFile.fromBytes(
           'image', File(imageFile!.path).readAsBytesSync(),
           filename: imageFile!.path));
-      http.StreamedResponse response = await request.send();
+      http.Response response =
+          await http.Response.fromStream(await request.send());
       if (response.statusCode == 200) {
-        return true;
+        var value = response.body.replaceAll(new RegExp(r'[^0-9]'), '');
+        return value;
       } else {
         await EasyLoading.showError(
             "Error Code : ${response.statusCode.toString()}");
@@ -98,6 +100,6 @@ class ApiService {
     } catch (error) {
       print(error.toString());
     }
-    return false;
+    return -1;
   }
 }
