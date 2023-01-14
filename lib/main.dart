@@ -80,7 +80,7 @@ class _LightPollutionAppState extends State<LightPollutionApp>
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.camera),
-            label: 'Messure',
+            label: 'Measure',
           ),
         ],
         currentIndex: selectedIndex,
