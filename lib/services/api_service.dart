@@ -9,64 +9,51 @@ import 'device_info.dart';
 import 'location_service.dart';
 
 class ApiService {
-  static final _client = http.Client();
+  // static final _client = http.Client();
 
-  static final _loginUrl = Uri.parse('http://10.100.102.6:5000/login');
+  static final _loginUrl = Uri.parse('http://10.100.102.7:5000/login');
 
-  static final _registerUrl = Uri.parse('http://10.100.102.6:5000/register');
+  static final _registerUrl = Uri.parse('http://10.100.102.7:5000/register');
 
   static final _sendImageUrl =
-      Uri.parse("http://10.100.102.6:5000/sendMeasurement");
+      Uri.parse("http://10.100.102.7:5000/sendMeasurement");
 
   static login(username, password, context) async {
-    http.Response response = await _client.post(_loginUrl, body: {
-      "username": username,
-      "password": password,
-    });
+    try {
+      Map<String, dynamic> jsonMap = {
+        'username': username,
+        'password': password,
+      };
+      http.Response response = await http.post(_loginUrl,
+          body: json.encode(jsonMap),
+          headers: {'Content-Type': 'application/json'});
 
-    if (response.statusCode == 200) {
-      print(jsonDecode(response.body));
-      var json = jsonDecode(response.body);
-
-      if (json[0] == 'success') {
-        await EasyLoading.showSuccess(json[0]);
-        // await Navigator.push(
-        //     context, MaterialPageRoute(builder: (context) => CameraWidget()));
-      } else {
-        EasyLoading.showError(json[0]);
-      }
-    } else {
-      await EasyLoading.showError(
-          "Error Code : ${response.statusCode.toString()}");
+      var message = jsonDecode(response.body);
+      return message['message'];
+    } catch (_) {
+      return "failed";
     }
   }
 
   static register(
       username, first_name, last_name, age, password, context) async {
     try {
-      http.Response response = await _client.post(_registerUrl, body: {
-        "username": username,
+      Map<String, dynamic> jsonMap = {
+        'username': username,
         "first_name": first_name,
         "last_name": last_name,
         "age": age,
-        "password": password,
-      });
-      if (response.statusCode == 200) {
-        var json = jsonDecode(response.body);
-        if (json[0] == 'username already exist') {
-          await EasyLoading.showError(json[0]);
-        } else {
-          await EasyLoading.showSuccess(json[0]);
-          return true;
-        }
-      } else {
-        await EasyLoading.showError(
-            "Error Code : ${response.statusCode.toString()}");
-      }
+        'password': password,
+      };
+      http.Response response = await http.post(_registerUrl,
+          body: json.encode(jsonMap),
+          headers: {'Content-Type': 'application/json'});
+
+      var message = jsonDecode(response.body);
+      return message['message'];
     } catch (_) {
-      print("failed");
+      return "failed";
     }
-    return false;
   }
 
   static upload(XFile imageFile) async {
@@ -91,7 +78,7 @@ class ApiService {
       http.Response response =
           await http.Response.fromStream(await request.send());
       if (response.statusCode == 200) {
-        var value = response.body.replaceAll(new RegExp(r'[^0-9]'), '');
+        var value = response.body.replaceAll(RegExp(r'[^0-9]'), '');
         return value;
       } else {
         await EasyLoading.showError(
