@@ -9,14 +9,17 @@ import 'device_info.dart';
 import 'location_service.dart';
 
 class ApiService {
-  // static final _client = http.Client();
+  //server
+  static const ip = "http://132.73.84.182:80";
 
-  static final _loginUrl = Uri.parse('http://10.100.102.7:5000/login');
+  //local
+  // static const ip = "http://10.100.102.7:5000";
 
-  static final _registerUrl = Uri.parse('http://10.100.102.7:5000/register');
+  static final _loginUrl = Uri.parse('$ip/login');
 
-  static final _sendImageUrl =
-      Uri.parse("http://10.100.102.7:5000/sendMeasurement");
+  static final _registerUrl = Uri.parse('$ip/register');
+
+  static final _sendImageUrl = Uri.parse("$ip/sendMeasurement");
 
   static login(username, password, context) async {
     try {
@@ -56,7 +59,7 @@ class ApiService {
     }
   }
 
-  static upload(XFile imageFile) async {
+  static upload(XFile imageFile, String cloudCoverage) async {
     try {
       var request = http.MultipartRequest('POST', _sendImageUrl);
       Map<String, dynamic> deviceInfo = await DeviceInfo.getPlatformState();
@@ -64,7 +67,7 @@ class ApiService {
       Position? position = await LocationService.getCurrentPosition();
       if (position != null) {
         request.fields.addAll({
-          "cloud_cover": '0',
+          "cloud_cover": cloudCoverage,
           "latitude": position.latitude.toString(),
           "longitude": position.longitude.toString(),
           "elevation": position.altitude.toString(),
@@ -87,6 +90,6 @@ class ApiService {
     } catch (error) {
       print(error.toString());
     }
-    return -1;
+    return "-1";
   }
 }

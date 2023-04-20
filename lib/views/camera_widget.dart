@@ -31,6 +31,8 @@ class _CameraWidgetState extends State<CameraWidget>
   CameraController? controller;
   XFile? imageFile;
   XFile? videoFile;
+  double cloudCoverage = 0;
+  String cloudCoverageString = "0";
 
   @override
   void initState() {
@@ -108,7 +110,51 @@ class _CameraWidgetState extends State<CameraWidget>
                             fontWeight: FontWeight.w900,
                           )),
                     )
-                  : null)
+                  : null),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Row(
+              children: <Widget>[],
+            ),
+          ),
+          Text(
+            "Cloud Coverage: $cloudCoverageString",
+            style: TextStyle(
+              fontSize: 25,
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          Slider(
+            min: 0,
+            max: 4,
+            divisions: 4,
+            value: cloudCoverage,
+            label: cloudCoverageString,
+            onChanged: (value) {
+              setState(() {
+                cloudCoverage = value;
+                switch (value.toInt()) {
+                  case 0:
+                    cloudCoverageString = "0/4";
+                    break;
+                  case 1:
+                    cloudCoverageString = "1/4";
+                    break;
+                  case 2:
+                    cloudCoverageString = "2/4";
+                    break;
+                  case 3:
+                    cloudCoverageString = "3/4";
+                    break;
+                  case 4:
+                    cloudCoverageString = "4/4";
+                    break;
+                  default:
+                }
+              });
+            },
+          ),
         ],
       ),
     );
@@ -235,7 +281,7 @@ class _CameraWidgetState extends State<CameraWidget>
           imageFile = file;
         });
         if (file != null) {
-          var value = await ApiService.upload(file);
+          var value = await ApiService.upload(file, cloudCoverageString);
           if (int.parse(value) >= 0) {
             showInSnackBar(
                 'Measurement has been Sent! Pollution value: ' + value);
