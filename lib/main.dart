@@ -39,9 +39,9 @@ class _LightPollutionAppState extends State<LightPollutionApp>
   @override
   Widget build(BuildContext context) {
     final List<Widget> _pages = <Widget>[
-      WelcomePage(onItemTapped),
-      LoginPage(onItemTapped),
-      RegisterPage(onItemTapped),
+      // WelcomePage(onItemTapped),
+      // LoginPage(onItemTapped),
+      // RegisterPage(onItemTapped),
       CameraWidget(onItemTapped),
     ];
 
@@ -61,31 +61,31 @@ class _LightPollutionAppState extends State<LightPollutionApp>
             ),
           ),
           child: _pages.elementAt(selectedIndex)),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.black,
-        unselectedItemColor: Colors.white,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.login),
-            label: 'Login',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.app_registration_rounded),
-            label: 'Register',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.camera),
-            label: 'Measure',
-          ),
-        ],
-        currentIndex: selectedIndex,
-        onTap: (onItemTapped),
-      ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   type: BottomNavigationBarType.fixed,
+      //   backgroundColor: Colors.black,
+      //   unselectedItemColor: Colors.white,
+      //   items: const <BottomNavigationBarItem>[
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.home),
+      //       label: 'Home',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.login),
+      //       label: 'Login',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.app_registration_rounded),
+      //       label: 'Register',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.camera),
+      //       label: 'Measure',
+      //     ),
+      //   ],
+      //   currentIndex: selectedIndex,
+      //   onTap: (onItemTapped),
+      // ),
     ));
   }
 }

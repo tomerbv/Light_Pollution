@@ -7,6 +7,8 @@ import '../services/errors.dart';
 import '../services/location_service.dart';
 import 'package:image/image.dart' as imglib;
 
+import 'instructions.dart';
+
 class CameraWidget extends StatefulWidget {
   Function(int) callback;
   CameraWidget(this.callback, {super.key});
@@ -83,19 +85,19 @@ class _CameraWidgetState extends State<CameraWidget>
       },
       child: Column(
         children: <Widget>[
+          Container(alignment: Alignment.topRight, child: const Instructions()),
           Container(
-              padding: const EdgeInsets.only(top: 25.0),
               child: controller != null
                   ? Text(
                       "Cloud Coverage: $cloudCoverageString",
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 25,
                         color: Colors.white70,
                         fontWeight: FontWeight.w700,
                       ),
                     )
                   : null),
-          Container(
+          SizedBox(
               width: 250.0,
               height: 75.0,
               // padding: const EdgeInsets.all(10.0),
@@ -139,10 +141,10 @@ class _CameraWidgetState extends State<CameraWidget>
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
-              children: <Widget>[],
+              children: const <Widget>[],
             ),
           ),
-          Container(
+          SizedBox(
               width: 75.0,
               height: 75.0,
               child: controller != null
