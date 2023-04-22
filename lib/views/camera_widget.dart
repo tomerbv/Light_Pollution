@@ -83,6 +83,54 @@ class _CameraWidgetState extends State<CameraWidget>
       },
       child: Column(
         children: <Widget>[
+          Container(
+              padding: const EdgeInsets.only(top: 25.0),
+              child: controller != null
+                  ? Text(
+                      "Cloud Coverage: $cloudCoverageString",
+                      style: TextStyle(
+                        fontSize: 25,
+                        color: Colors.white70,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    )
+                  : null),
+          Container(
+              width: 250.0,
+              height: 75.0,
+              // padding: const EdgeInsets.all(10.0),
+              child: controller != null
+                  ? Slider(
+                      min: 0,
+                      max: 4,
+                      divisions: 4,
+                      value: cloudCoverage,
+                      label: cloudCoverageString,
+                      onChanged: (value) {
+                        setState(() {
+                          cloudCoverage = value;
+                          switch (value.toInt()) {
+                            case 0:
+                              cloudCoverageString = "0/4";
+                              break;
+                            case 1:
+                              cloudCoverageString = "1/4";
+                              break;
+                            case 2:
+                              cloudCoverageString = "2/4";
+                              break;
+                            case 3:
+                              cloudCoverageString = "3/4";
+                              break;
+                            case 4:
+                              cloudCoverageString = "4/4";
+                              break;
+                            default:
+                          }
+                        });
+                      },
+                    )
+                  : null),
           Expanded(
             child: Container(
               child: _cameraPreviewWidget(),
@@ -111,50 +159,6 @@ class _CameraWidgetState extends State<CameraWidget>
                           )),
                     )
                   : null),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Row(
-              children: <Widget>[],
-            ),
-          ),
-          Text(
-            "Cloud Coverage: $cloudCoverageString",
-            style: TextStyle(
-              fontSize: 25,
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          Slider(
-            min: 0,
-            max: 4,
-            divisions: 4,
-            value: cloudCoverage,
-            label: cloudCoverageString,
-            onChanged: (value) {
-              setState(() {
-                cloudCoverage = value;
-                switch (value.toInt()) {
-                  case 0:
-                    cloudCoverageString = "0/4";
-                    break;
-                  case 1:
-                    cloudCoverageString = "1/4";
-                    break;
-                  case 2:
-                    cloudCoverageString = "2/4";
-                    break;
-                  case 3:
-                    cloudCoverageString = "3/4";
-                    break;
-                  case 4:
-                    cloudCoverageString = "4/4";
-                    break;
-                  default:
-                }
-              });
-            },
-          ),
         ],
       ),
     );
