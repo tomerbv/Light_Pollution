@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../services/errors.dart';
 import '../services/location_service.dart';
-import 'package:image/image.dart' as imglib;
 
 import 'instructions.dart';
 
@@ -72,8 +71,8 @@ class _CameraWidgetState extends State<CameraWidget>
     return WillPopScope(
       //handle return button
       onWillPop: () async {
-        if (this.controller != null) {
-          this.controller = null;
+        if (controller != null) {
+          controller = null;
           setState(() {});
         } else {
           //Welcome widget
@@ -149,7 +148,7 @@ class _CameraWidgetState extends State<CameraWidget>
               height: 75.0,
               child: controller != null
                   ? FloatingActionButton(
-                      backgroundColor: Color.fromARGB(255, 49, 121, 255),
+                      backgroundColor: const Color.fromARGB(255, 49, 121, 255),
                       onPressed: () {
                         onTakePictureButtonPressed();
                       },
@@ -171,11 +170,11 @@ class _CameraWidgetState extends State<CameraWidget>
     final CameraController? cameraController = controller;
 
     if (cameraController == null || !cameraController.value.isInitialized) {
-      return Container(
+      return SizedBox(
           width: 200.0,
           height: 200.0,
           child: FloatingActionButton(
-            backgroundColor: Color.fromARGB(255, 219, 132, 0),
+            backgroundColor: const Color.fromARGB(255, 219, 132, 0),
             onPressed: () {
               onNewCameraSelected(_cameras[0]);
             },

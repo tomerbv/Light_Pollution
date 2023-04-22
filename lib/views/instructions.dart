@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Instructions extends StatelessWidget {
@@ -16,7 +15,7 @@ class Instructions extends StatelessWidget {
                           color: Colors.white70,
                           fontWeight: FontWeight.w700)),
                   backgroundColor: Colors.black87,
-                  shape: RoundedRectangleBorder(
+                  shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(20.0))),
                   content: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -67,14 +66,15 @@ class Instructions extends StatelessWidget {
                     Center(
                       child: TextButton(
                         onPressed: () => Navigator.pop(context, 'OK'),
-                        child: const Text('OK'),
                         style: ButtonStyle(
                           shape:
                               MaterialStateProperty.all(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
-                            side: BorderSide(width: 3, color: Colors.white70),
+                            side: const BorderSide(
+                                width: 3, color: Colors.white70),
                           )),
                         ),
+                        child: const Text('OK'),
                       ),
                     )
                   ]),
