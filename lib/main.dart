@@ -1,8 +1,5 @@
 import 'dart:async';
 import 'package:light_pollution/views/camera_widget.dart';
-import 'package:light_pollution/views/login.dart';
-import 'package:light_pollution/views/register.dart';
-import 'package:light_pollution/views/welcome.dart';
 import 'package:flutter/material.dart';
 
 /// CameraApp is the Main Application.
@@ -39,9 +36,6 @@ class _LightPollutionAppState extends State<LightPollutionApp>
   @override
   Widget build(BuildContext context) {
     final List<Widget> _pages = <Widget>[
-      // WelcomePage(onItemTapped),
-      // LoginPage(onItemTapped),
-      // RegisterPage(onItemTapped),
       CameraWidget(onItemTapped),
     ];
 
@@ -61,31 +55,6 @@ class _LightPollutionAppState extends State<LightPollutionApp>
             ),
           ),
           child: _pages.elementAt(selectedIndex)),
-      // bottomNavigationBar: BottomNavigationBar(
-      //   type: BottomNavigationBarType.fixed,
-      //   backgroundColor: Colors.black,
-      //   unselectedItemColor: Colors.white,
-      //   items: const <BottomNavigationBarItem>[
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.home),
-      //       label: 'Home',
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.login),
-      //       label: 'Login',
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.app_registration_rounded),
-      //       label: 'Register',
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.camera),
-      //       label: 'Measure',
-      //     ),
-      //   ],
-      //   currentIndex: selectedIndex,
-      //   onTap: (onItemTapped),
-      // ),
     ));
   }
 }
