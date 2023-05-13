@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 /// CameraApp is the Main Application.
 class LightPollutionApp extends StatefulWidget {
+  const LightPollutionApp({super.key});
+
   @override
   State<LightPollutionApp> createState() {
     return _LightPollutionAppState();
@@ -35,18 +37,13 @@ class _LightPollutionAppState extends State<LightPollutionApp>
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> _pages = <Widget>[
+    final List<Widget> pages = <Widget>[
       CameraWidget(onItemTapped),
     ];
 
     return MaterialApp(
         home: Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: const Text(
-          'Light Pollution App',
-        ),
-      ),
       body: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
@@ -54,12 +51,12 @@ class _LightPollutionAppState extends State<LightPollutionApp>
               fit: BoxFit.cover,
             ),
           ),
-          child: _pages.elementAt(selectedIndex)),
+          child: pages.elementAt(selectedIndex)),
     ));
   }
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(LightPollutionApp());
+  runApp(const LightPollutionApp());
 }

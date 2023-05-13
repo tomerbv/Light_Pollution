@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:geolocator/geolocator.dart';
@@ -15,49 +14,7 @@ class ApiService {
   //local
   // static const ip = "http://10.100.102.7:5000";
 
-  static final _loginUrl = Uri.parse('$ip/login');
-
-  static final _registerUrl = Uri.parse('$ip/register');
-
-  static final _sendImageUrl = Uri.parse("$ip/sendMeasurement");
-
-  static login(username, password, context) async {
-    try {
-      Map<String, dynamic> jsonMap = {
-        'username': username,
-        'password': password,
-      };
-      http.Response response = await http.post(_loginUrl,
-          body: json.encode(jsonMap),
-          headers: {'Content-Type': 'application/json'});
-
-      var message = jsonDecode(response.body);
-      return message['message'];
-    } catch (_) {
-      return "failed";
-    }
-  }
-
-  static register(
-      username, first_name, last_name, age, password, context) async {
-    try {
-      Map<String, dynamic> jsonMap = {
-        'username': username,
-        "first_name": first_name,
-        "last_name": last_name,
-        "age": age,
-        'password': password,
-      };
-      http.Response response = await http.post(_registerUrl,
-          body: json.encode(jsonMap),
-          headers: {'Content-Type': 'application/json'});
-
-      var message = jsonDecode(response.body);
-      return message['message'];
-    } catch (_) {
-      return "failed";
-    }
-  }
+  static final _sendImageUrl = Uri.parse("$ip/app/sendMeasurement");
 
   static upload(XFile imageFile, String cloudCoverage) async {
     try {
@@ -76,8 +33,8 @@ class ApiService {
       }
 
       request.files.add(http.MultipartFile.fromBytes(
-          'image', File(imageFile!.path).readAsBytesSync(),
-          filename: imageFile!.path));
+          'image', File(imageFile.path).readAsBytesSync(),
+          filename: imageFile.path));
       http.Response response =
           await http.Response.fromStream(await request.send());
       if (response.statusCode == 200) {
@@ -89,6 +46,7 @@ class ApiService {
       }
     } catch (error) {
       print(error.toString());
+      return "-1";
     }
     return "-1";
   }
