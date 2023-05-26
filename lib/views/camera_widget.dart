@@ -35,6 +35,8 @@ class _CameraWidgetState extends State<CameraWidget>
   double cloudCoverage = 0;
   String cloudCoverageString = "0";
 
+  bool isUploading = false; // Added flag to track uploading state
+
   @override
   void initState() {
     super.initState();
@@ -85,6 +87,7 @@ class _CameraWidgetState extends State<CameraWidget>
       child: Column(
         children: <Widget>[
           Container(alignment: Alignment.topRight, child: const Instructions()),
+          const SizedBox(height: 20),
           Container(
               child: controller != null
                   ? Text(
@@ -286,13 +289,24 @@ class _CameraWidgetState extends State<CameraWidget>
           imageFile = file;
         });
         if (file != null) {
-          var value = await ApiService.upload(file, cloudCoverageString);
-          if (int.parse(value) >= 0) {
-            showInSnackBar(
-                'Measurement has been Sent! Pollution value: ' + value);
+          showLoadingAnimation(); // Show loading animation
+          var stringValue = await ApiService.upload(file, cloudCoverageString);
+          var value = int.parse(stringValue);
+          if (value >= 0) {
+            if (value == 0) {
+              showInSnackBar(
+                  'Value too low, make sure your camera is not covered');
+            } else if (value == 8) {
+              showInSnackBar(
+                  'Value too high, try to avoid direct light sources');
+            } else {
+              showInSnackBar(
+                  'Measurement has been Sent! Pollution value: ' + stringValue);
+            }
           } else {
             showInSnackBar('An error has occured, could not send measurement');
           }
+          hideLoadingAnimation(); // Hide loading animation
         }
       }
     });
@@ -322,5 +336,42 @@ class _CameraWidgetState extends State<CameraWidget>
   void _showCameraException(CameraException e) {
     ErrorHandler.logError(e.code, e.description);
     showInSnackBar('Error: ${e.code}\n${e.description}');
+  }
+
+  void showLoadingAnimation() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Color.fromARGB(180, 0, 0, 0),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                CircularProgressIndicator(),
+                SizedBox(height: 16.0),
+                Text(
+                  'Sending Measurement...',
+                  style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(180, 255, 255, 255)),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void hideLoadingAnimation() {
+    Navigator.of(context).pop();
   }
 }
