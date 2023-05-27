@@ -4,8 +4,10 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../services/errors.dart';
+import '../services/loading_service.dart';
 import '../services/location_service.dart';
 
+import '../services/results_service.dart';
 import 'instructions.dart';
 
 class CameraWidget extends StatefulWidget {
@@ -289,24 +291,17 @@ class _CameraWidgetState extends State<CameraWidget>
           imageFile = file;
         });
         if (file != null) {
-          showLoadingAnimation(); // Show loading animation
+          LoadingService.showLoadingAnimation(
+              context); // Show loading animation
           var stringValue = await ApiService.upload(file, cloudCoverageString);
+          LoadingService.hideLoadingAnimation(
+              context); // Hide Loading Animation
           var value = int.parse(stringValue);
           if (value >= 0) {
-            if (value == 0) {
-              showInSnackBar(
-                  'Value too low, make sure your camera is not covered');
-            } else if (value == 8) {
-              showInSnackBar(
-                  'Value too high, try to avoid direct light sources');
-            } else {
-              showInSnackBar(
-                  'Measurement has been Sent! Pollution value: ' + stringValue);
-            }
+            ResultsService.showLightPollutionValueDialog(context, value);
           } else {
             showInSnackBar('An error has occured, could not send measurement');
           }
-          hideLoadingAnimation(); // Hide loading animation
         }
       }
     });
@@ -336,42 +331,5 @@ class _CameraWidgetState extends State<CameraWidget>
   void _showCameraException(CameraException e) {
     ErrorHandler.logError(e.code, e.description);
     showInSnackBar('Error: ${e.code}\n${e.description}');
-  }
-
-  void showLoadingAnimation() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Color.fromARGB(180, 0, 0, 0),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                CircularProgressIndicator(),
-                SizedBox(height: 16.0),
-                Text(
-                  'Sending Measurement...',
-                  style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(180, 255, 255, 255)),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void hideLoadingAnimation() {
-    Navigator.of(context).pop();
   }
 }
