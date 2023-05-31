@@ -88,8 +88,9 @@ class _CameraWidgetState extends State<CameraWidget>
       },
       child: Column(
         children: <Widget>[
+          const SizedBox(height: 40),
           Container(alignment: Alignment.topRight, child: const Instructions()),
-          const SizedBox(height: 20),
+          // const SizedBox(height: 20),
           Container(
               child: controller != null
                   ? Text(
