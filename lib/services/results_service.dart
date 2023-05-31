@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:simple_animations/simple_animations.dart';
 
 class ResultsService {
   static void showLightPollutionValueDialog(BuildContext context, int value) {
-    const List<Color> barColors = [
-      Colors.green,
-      Colors.lightGreen,
-      Colors.yellow,
-      Colors.orange,
-      Colors.deepOrange,
-      Colors.red,
-      Colors.purple,
-    ];
+    // const List<Color> barColors = [
+    //   Colors.green,
+    //   Colors.lightGreen,
+    //   Colors.yellow,
+    //   Colors.orange,
+    //   Colors.deepOrange,
+    //   Colors.red,
+    //   Colors.purple,
+    // ];
 
     String title;
     String valueAsText;
+    Color valueColor = Colors.white;
 
     switch (value) {
       case 0:
@@ -22,31 +24,38 @@ class ResultsService {
         break;
       case 1:
         title = 'Low Light Pollution';
-        valueAsText = 'Value: $value';
+        valueAsText = 'Pollution Value: $value';
+        valueColor = Colors.green;
         break;
       case 2:
         title = 'Moderately Low Light Pollution';
-        valueAsText = 'Value: $value';
+        valueAsText = 'Pollution Value: $value';
+        valueColor = Colors.lightGreen;
         break;
       case 3:
         title = 'Moderate Light Pollution';
-        valueAsText = 'Value: $value';
+        valueAsText = 'Pollution Value: $value';
+        valueColor = Colors.yellow;
         break;
       case 4:
         title = 'Moderately High Light Pollution';
-        valueAsText = 'Value: $value';
+        valueAsText = 'Pollution Value: $value';
+        valueColor = Colors.orange;
         break;
       case 5:
         title = 'High Light Pollution';
-        valueAsText = 'Value: $value';
+        valueAsText = 'Pollution Value: $value';
+        valueColor = Colors.deepOrange;
         break;
       case 6:
         title = 'Very High Light Pollution';
-        valueAsText = 'Value: $value';
+        valueAsText = 'Pollution Value: $value';
+        valueColor = Colors.red;
         break;
       case 7:
         title = 'Extremely High Light Pollution';
-        valueAsText = 'Value: $value';
+        valueAsText = 'Pollution Value: $value';
+        valueColor = Colors.purple;
         break;
       case 8:
         title = 'Light Pollution Value Too High';
@@ -54,7 +63,7 @@ class ResultsService {
         break;
       default:
         title = 'Light Pollution Value: $value';
-        valueAsText = 'Value: $value';
+        valueAsText = 'Pollution Value: $value';
         break;
     }
 
@@ -84,16 +93,16 @@ class ResultsService {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(180, 255, 255, 255),
+                    color: valueColor,
                   ),
                 ),
                 if (value != 0 &&
                     value != 8) // Show the bar only for values between 1 and 7
                   const SizedBox(
-                    height: 32.0,
+                    height: 50.0,
                   ),
                 if (value != 0 &&
                     value != 8) // Show the bar only for values between 1 and 7
@@ -101,24 +110,40 @@ class ResultsService {
                     height: 25.0,
                     width: 300.0, // Adjust the height as desired
                     decoration: BoxDecoration(
+                      border:
+                          Border.all(color: Color.fromARGB(220, 255, 255, 255)),
                       borderRadius: BorderRadius.circular(10.0),
                       gradient: const LinearGradient(
-                        colors: barColors,
+                        colors: [Colors.black45, Colors.white38],
                         begin: Alignment.bottomLeft,
                         end: Alignment.bottomRight,
                       ),
                     ),
                     child: Stack(
                       children: [
-                        Transform.translate(
-                          offset: Offset(arrowPosition * (250), -15),
-                          child: Transform.rotate(
-                            angle:
-                                3.14, // Rotate the arrow by 180 degrees (pi radians)
-                            child: Icon(
-                              Icons.arrow_drop_up,
-                              color: Colors.white,
-                              size: 40.0,
+                        MirrorAnimationBuilder<double>(
+                          tween: Tween(
+                              begin: -10.0,
+                              end: -5.0), // value for offset x-coordinate
+                          duration: const Duration(seconds: 1),
+                          curve: Curves.easeInOutSine, // non-linear animation
+                          builder: (context, value, child) {
+                            return Transform.translate(
+                              offset: Offset(0,
+                                  value), // use animated value for y-coordinate
+                              child: child,
+                            );
+                          },
+                          child: Transform.translate(
+                            offset: Offset(arrowPosition * (250), -15),
+                            child: Transform.rotate(
+                              angle:
+                                  3.14, // Rotate the arrow by 180 degrees (pi radians)
+                              child: const Icon(
+                                Icons.arrow_drop_up,
+                                color: Color.fromARGB(220, 255, 255, 255),
+                                size: 40.0,
+                              ),
                             ),
                           ),
                         ),
@@ -131,7 +156,7 @@ class ResultsService {
                   style: const TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(180, 255, 255, 255),
+                    color: Color.fromARGB(220, 255, 255, 255),
                   ),
                 ),
                 const SizedBox(height: 32.0),
@@ -141,9 +166,9 @@ class ResultsService {
                   },
                   child: const Text(
                     'Close',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(180, 255, 255, 255),
+                      color: Color.fromARGB(220, 0, 0, 0),
                     ),
                   ),
                 ),

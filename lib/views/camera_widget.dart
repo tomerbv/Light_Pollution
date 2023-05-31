@@ -294,10 +294,12 @@ class _CameraWidgetState extends State<CameraWidget>
           LoadingService.showLoadingAnimation(
               context); // Show loading animation
           var stringValue = await ApiService.upload(file, cloudCoverageString);
+          // ignore: use_build_context_synchronously
           LoadingService.hideLoadingAnimation(
               context); // Hide Loading Animation
           var value = int.parse(stringValue);
           if (value >= 0) {
+            // ignore: use_build_context_synchronously
             ResultsService.showLightPollutionValueDialog(context, value);
           } else {
             showInSnackBar('An error has occured, could not send measurement');
